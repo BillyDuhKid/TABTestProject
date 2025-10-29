@@ -1,0 +1,8 @@
+{
+  "solution": {
+    "path": "TABTestProject.sln",
+    "projects": [
+      "Intermediate\\ProjectFiles\\TABTestProject.vcxproj"
+    ]
+  }
+}
