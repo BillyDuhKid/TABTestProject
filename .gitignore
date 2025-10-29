@@ -74,4 +74,4 @@ Plugins/**/Intermediate/*
 DerivedDataCache/*
 
 # Ignored TAB_Game Plugin. Has it's own github repository
-Plugins/TAB_Game/*
+Plugins/*
