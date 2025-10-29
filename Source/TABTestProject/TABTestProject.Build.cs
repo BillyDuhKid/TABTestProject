@@ -18,7 +18,8 @@ public class TABTestProject : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
+			"Slate",
+			"TAB_Game"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
