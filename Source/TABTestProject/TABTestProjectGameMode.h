@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "Game/TAB_GameMode.h"
 #include "TABTestProjectGameMode.generated.h"
 
 /**
  *  Simple GameMode for a third person game
  */
 UCLASS(abstract)
-class ATABTestProjectGameMode : public AGameModeBase
+class ATABTestProjectGameMode : public ATAB_GameMode
 {
 	GENERATED_BODY()
 

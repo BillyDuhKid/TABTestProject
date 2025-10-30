@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "Player/TAB_Character.h"
 #include "Logging/LogMacros.h"
 #include "TABTestProjectCharacter.generated.h"
 
@@ -19,7 +19,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
  *  Implements a controllable orbiting camera
  */
 UCLASS(abstract)
-class ATABTestProjectCharacter : public ACharacter
+class ATABTestProjectCharacter : public ATAB_Character
 {
 	GENERATED_BODY()
 
