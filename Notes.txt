@@ -1,3 +1,23 @@
+Beyond Compare 3
+
+SHOULD still be able to get this to work: http://www.scootersoftware.com/support.php?zz=kb_vcs#visualstudio-git
+https://stackoverflow.com/questions/4466238/how-to-configure-visual-studio-to-use-beyond-compare
+
+adding below to .git/config file:
+
+[diff]
+	tool = bc
+[difftool "bc"]
+	cmd = \"C:\Program Files (x86)\Beyond Compare 3\BCompare.exe\" \"$LOCAL\" \"$REMOTE\"
+[merge]
+	tool = bc
+[mergetool "bc"]
+	cmd = \"C:\Program Files (x86)\Beyond Compare 3\BCompare.exe\" \"$REMOTE\" \"$LOCAL\" \"$BASE\" \"$MERGED\"
+
+
+
+
+
 
 Video: Has an Input Mapping Context setup with IA_UI_Accept, IA_UI_Back, AU_UI_TabLeft, etc. his shows a InputMappingContext, mine is in a CommonInputActionDataBase.
 
