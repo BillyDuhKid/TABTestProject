@@ -1,0 +1,14 @@
+.git\
+.github\
+.vs\
+Binaries\
+Build\
+DerivedDataCache\
+Intermediate\
+Packaged\
+Plugins\TAB_Game\.git\
+Plugins\TAB_Game\Binaries\
+Plugins\TAB_Game\Intermediate\
+Saved\
+.vsconfig
+PluginTesting.sln

@@ -1,0 +1,81 @@
+
+
+// The Item Label of the CineCameraActor in the map using this game mode.
+FString const CameraActorName{ TEXT("TAB_DefaultCineCameraActor") };
+
+----------------------------------------
+void ATAB_MainMenuGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UWorld* World = GetWorld();
+	if (!World) { return; }
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+	//TODO: verify if IsLocalPlayerController() check is needed to prevent code from running on server.
+	if (!PlayerController || !PlayerController->IsLocalPlayerController()) { return; }
+
+#if WITH_EDITOR
+	/* HERE PACKAGE FAILING DO TO CameraCast->GetActorLabel()
+	* 
+	*	Returns this actor's current label.  Actor labels are only available in development builds.
+	*	UFUNCTION(BlueprintCallable, Category = "Editor Scripting | Actor Editing", meta = (KeyWords = "Display Name"))
+	*	ENGINE_API const FString& GetActorLabel(bool bCreateIfNone = true) const;
+	*/
+	// set camera
+	//TODO: there seems like there should be a better way than getting an array of AActors and parcing it, but this seems to be standard UE5 procedure in the documentation.
+	TArray<AActor*> CameraActors;
+	UGameplayStatics::GetAllActorsOfClass(World, ACineCameraActor::StaticClass(), CameraActors);
+
+	for (AActor* CameraActor : CameraActors)
+	{
+		ACineCameraActor* CameraCast = Cast<ACineCameraActor>(CameraActor);
+		if (CameraCast)
+		{
+			//if (GEngine) { GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Blue, FString::Printf(TEXT("Found CameraCast:ActorLabel: %s"), *CameraCast->GetActorLabel())); }
+			if (CameraActorName == CameraCast->GetActorLabel())
+			{
+				// remove the black bars if the screen doesn't match the camera's aspect ratio.
+				CameraCast->GetCameraComponent()->bConstrainAspectRatio = false;
+				PlayerController->SetViewTarget(CameraCast);
+				break;
+			}
+		}
+	}
+#endif
+
+	// set up title screen
+	if (TitleScreenWBPClass)
+	{
+		TitleScreenWBP = CreateWidget<UTAB_TitleScreen>(PlayerController, TitleScreenWBPClass);
+		TitleScreenWBP->WidgetRemovedDelegate.BindLambda([this]() { OnTitleScreenRemoved(); });
+		TitleScreenWBP->AddToViewport();
+
+		EnterInputUIOnlyMode(TitleScreenWBP->GetCachedWidget());
+	}
+	else
+	{
+		EnterInputUIOnlyMode(nullptr);
+	}
+
+/*	Alternate run time class creation instead of ConstructorHelpers::FClassFinder<UUserWidget> GetClass if Project Loading from EGS crashed with FClassFinder this may work instead
+	if (!TitleScreenWBP)
+	{
+		TitleScreenWBPClass = LoadClass<UTAB_TitleScreen>(ANY_PACKAGE, TEXT("/Script/UMGEditor.WidgetBlueprint'/TAB_Game/MenuSystem/TAB_BP_TitleScreen.TAB_BP_TitleScreen_C'"));
+		if (TitleScreenWBPClass)
+		{
+			TitleScreenWBP = CreateWidget<UTAB_TitleScreen>(PlayerController, TitleScreenWBPClass);
+		}
+	}
+
+	if (TitleScreenWBP)
+	{
+		TitleScreenWBP->AddToViewport();
+		EnterInputUIOnlyMode(TitleScreenWBP->GetCachedWidget());
+	}
+	else
+	{
+		EnterInputUIOnlyMode(nullptr);
+	}
+*/
+}

@@ -1,0 +1,210 @@
+
+Video: Has an Input Mapping Context setup with IA_UI_Accept, IA_UI_Back, AU_UI_TabLeft, etc. his shows a InputMappingContext, mine is in a CommonInputActionDataBase.
+
+Checked Enable Enhanced Input Support in Project Settings, Common Input Settings.
+
+Turning on Enhanced input added additional options to the Common UI Input Data table, creating and adding those IA however stopped backing out of the Settings screen from working.
+
+create a Common Bound Action Button
+
+- Horizontal box
+	- Input Actions Icon
+	- Common Text
+
+9:10 add button style
+
+in the Common Bound Action Button, under the action checked Display in Action Bar.
+
+
+Not following along yet:
+Turn on Auto Activate.
+Turn on Back Handler and Back Handler Displayed in Action Bar.	<- what was missing.
+
+Note: each screen has it's own Input Mapping?
+
+
+
+
+
+Removed option that does work:
+
+
+	- [OPTIONAL] Create a new class extending DeveloperSettings.
+		Example header file adding quick utility debug options:
+--------------------------------------------------------------------------------------------------------------------------------------------------
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Engine/DeveloperSettings.h"
+#include "DebugDeveloperSettings.generated.h"
+
+/**
+ *	Debug Options added to make testing the TAB_Game plugin faster and easier.
+ */
+UCLASS(Config = Game, Defaultconfig, meta = (DisplayName = "DEBUG Plugin Testing Options"))
+class PLUGINTESTING_API UDebugDeveloperSettings : public UDeveloperSettings
+{
+	GENERATED_BODY()
+	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Config, Category = "DEBUG Plugin Testing Options")
+	bool bDebugOverrideGameModes{ true };
+
+	UDebugDeveloperSettings();
+};
+--------------------------------------------------------------------------------------------------------------------------------------------------
+		Example cpp file:
+--------------------------------------------------------------------------------------------------------------------------------------------------
+#include "DebugDeveloperSettings.h"
+#include "PluginTesting.h"
+
+UDebugDeveloperSettings::UDebugDeveloperSettings()
+{
+	// get needed settings from .ini file here.
+	const UDebugDeveloperSettings* DebugSettings = GetDefault<UDebugDeveloperSettings>();
+	if (DebugSettings == nullptr)
+	{
+		return;
+	}
+
+	bDebugOverrideGameModes = DebugSettings->bDebugOverrideGameModes;
+}
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+		Example of using this option:
+--------------------------------------------------------------------------------------------------------------------------------------------------
+#include "GameModes/PluginTestingMenuGameMode.h"
+#include "DebugDeveloperSettings.h"
+#include "GameInstanceSubsystems/TAB_GameCreatorSubsystem.h"
+
+void APluginTestingMenuGameMode::BeginPlay()
+{
+	// Override GameModes for PluginTesting Game. controlled by in Editor Debug Options for faster testing. //TODO: There maybe a better place to set these options.
+	UDebugDeveloperSettings* DebugSettings = GetMutableDefault<UDebugDeveloperSettings>();
+	if (DebugSettings == nullptr) { return; }
+
+	if (DebugSettings->bDebugOverrideGameModes)
+	{
+		// get GameCreator.
+		UTAB_GameCreatorSubsystem* GameCreator = GetWorld()->GetGameInstance()->GetSubsystem<UTAB_GameCreatorSubsystem>();
+		if (GameCreator == nullptr)
+		{
+			return;
+		}
+
+		/*	
+			GameInstanceSubsystems/TAB_GameCreatorSubsystem.h
+			void SetGameModes(const TArray<FGameModeStruct>&inGameModes);
+			void SetLobbyGameModes(const TArray<FGameMapStruct>&inLobbyMaps);
+			TArray<FGameModeStruct> GameModes{ FGameModeStruct("TAB_Unique678", 2, { FGameMapStruct(FText::FromString("Default Map"), "/TAB_Game/Maps/EXAMPLE_InGame") }) };
+			TArray <FGameMapStruct> LobbyMaps{ FGameMapStruct(FText::FromString("Default Map"), "/TAB_Game/Maps/EXAMPLE_Lobby") };
+		*/
+
+		//TODO: Should be a better place to set these game specific set once values.
+		TArray<FGameModeStruct> GameModes{ FGameModeStruct("PluginTestingGameMode", 2, { FGameMapStruct(FText::FromString("Plugin Testing Map"), "/Game/ThirdPerson/Maps/ThirdPersonMap") }) };
+		GameCreator->SetGameModes(GameModes);
+		TArray <FGameMapStruct> MainMenuMaps{ FGameMapStruct(FText::FromString("Main Menu Map"), "/Game/Maps/GameStartupMap") };
+		GameCreator->SetMainMenuMaps(MainMenuMaps);
+	}
+
+	Super::BeginPlay();
+}
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+	//WORKING:
+// https://youtu.be/p_biHD6QZvA?si=yp2K8IbN7pLf59SB
+// probably convert return value to an int32 clicked index.
+
+
+
+
+
+Running notes at least until Source Control is added and cleanup is made on the plugin
+
+
+Common UI 2024-05-04
+UI/Data/ControllerData are good to keep in editor BPs for ease of editing buttons etc.
+UI/Styling BPs should stay there.
+Other classes appear pretty simple to convert to C++
+
+
+
+
+
+Probable Temp Changes:
+none.
+
+
+
+- Alternate way to load Widget Blueprints at run time from C++
+	Note this works without causing a crash at time of loading the project from the Epic Game Store, but calling LoadClass seems to be less efficient
+	I believe the current implementation of ATAB_MainMenuGameMode:
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> TitleScreenClassFinder(TEXT("/TAB_Game/MenuSystem/TAB_BP_TitleScreen"));
+	if (TitleScreenClassFinder.Succeeded())
+	{
+		TitleScreenWBPClass = TitleScreenClassFinder.Class;
+	}
+
+	is more correct living in the constructor it's not actually called at run time I believe, should investigate more at some point to be sure assumtions are correct.
+
+	the code that worked before using this code was:
+
+/*	Alternate run time class creation instead of ConstructorHelpers::FClassFinder<UUserWidget> GetClass if Project Loading from EGS crashed with FClassFinder this may work instead
+	if (!TitleScreenWBP)
+	{
+		TitleScreenWBPClass = LoadClass<UTAB_WBP_TitleScreen>(ANY_PACKAGE, TEXT("/Script/UMGEditor.WidgetBlueprint'/TAB_Game/MenuSystem/TAB_BP_TitleScreen.TAB_BP_TitleScreen_C'"));
+		if (TitleScreenWBPClass)
+		{
+			TitleScreenWBP = CreateWidget<UTAB_WBP_TitleScreen>(PlayerController, TitleScreenWBPClass);
+		}
+	}
+
+	if (TitleScreenWBP)
+	{
+		TitleScreenWBP->AddToViewport();
+		EnterInputUIOnlyMode(TitleScreenWBP->GetCachedWidget());
+	}
+	else
+	{
+		EnterInputUIOnlyMode(nullptr);
+	}
+*/
+	The path should be moved to a const in case the blueprint is movied, but otherwise thould be a functional replacement.
+
+
+- Comments from learning...
+
+	A actors - in the world can be replicated
+
+	AHUD actor
+
+	A - Actor class in the level
+	U - object class not in the level
+
+
+	HUD class - use for in-game hud
+
+	TSubclassOf<> - allows dropdown of subclasses
+
+	// this adds the C++ class, but not the BP class so nothing from the designer shows
+	TitleScreenWBP = CreateWidget<UTAB_WBP_TitleScreen>(PlayerController, UTAB_WBP_TitleScreen::StaticClass());
+
+
+- Common UI Quickstart Guide - REMOVED
+
+	Going through: https://dev.epicgames.com/documentation/en-us/unreal-engine/common-ui-quickstart-guide-for-unreal-engine?application_version=5.3
+	- changed Edit > Project Settings > Engine > General Settings > Game Viewport Client Class   
+		from: GameViewportClient   to: CommonGameViewportClient.
+
+	Learned there is a lot of custom code, turning it on slowed the editor to a crawl at times. A lot of it doesn't seem intuitive. Will start trying to handle
+	what is needed myself and add this in later if needed... keep the UI light until I can figure that out.
+
+- Menu Tutorial - REMOVED
+	https://www.youtube.com/watch?v=UcPPkxi5HD0
+
+	Learned that in the designer having a Border fill the screen allowed the base BP_TESTMainMenu widget to get focus to handle On Key Down everts.
+	Overall the tutorial if very poorly made plan on removing all of it.
+

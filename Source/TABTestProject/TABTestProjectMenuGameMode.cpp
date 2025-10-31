@@ -14,7 +14,7 @@ void ATABTestProjectMenuGameMode::BeginPlay()
 	}
 
 	//TODO: Should be a better place to set these game specific set once values.
-	TArray<FGameModeStruct> GameModes{ FGameModeStruct("TABTestProjectMenuGameMode", 2, { FGameMapStruct(FText::FromString("TAB Test Map"), "/Game/ThirdPerson/Maps/ThirdPersonMap") }) };
+	TArray<FGameModeStruct> GameModes{ FGameModeStruct("TABTestProjectMenuGameMode", 2, { FGameMapStruct(FText::FromString("TAB Test Map"), "/Game/ThirdPerson/Lvl_ThirdPerson") }) };
 	GameCreator->SetGameModes(GameModes);
 	TArray <FGameMapStruct> MainMenuMaps{ FGameMapStruct(FText::FromString("Main Menu Map"), "/Game/Maps/GameStartupMap") };
 	GameCreator->SetMainMenuMaps(MainMenuMaps);
