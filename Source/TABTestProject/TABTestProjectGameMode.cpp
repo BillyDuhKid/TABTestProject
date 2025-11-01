@@ -6,9 +6,13 @@
 ATABTestProjectGameMode::ATABTestProjectGameMode()
 	: Super()
 {
-	// set default pawn class back to it's Blueprinted character default or other desired class. 
-	// See setup.txt in Plugins folder for details of why these lines are here.
-	// Note: this path is the default Third Person Blueprint template location.
+	// Replace the two settings changed in the Blueprint class here in C++ to avoid needing to create a new Blueprint just to change them.
+	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonPlayerController"));
+	if (PlayerControllerBPClass.Class != NULL)
+	{
+		PlayerControllerClass = PlayerControllerBPClass.Class;
+	}
+
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter"));
 	if (PlayerPawnBPClass.Class != NULL)
 	{
