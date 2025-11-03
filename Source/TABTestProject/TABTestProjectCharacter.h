@@ -57,15 +57,15 @@ public:
 protected:
 
 	/** Initialize input action bindings */
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	//virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
 
 	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
+	//void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
+	//void Look(const FInputActionValue& Value);
 
 public:
 
