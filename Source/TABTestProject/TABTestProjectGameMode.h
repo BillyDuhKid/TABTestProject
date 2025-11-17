@@ -18,6 +18,9 @@ public:
 	
 	/** Constructor */
 	ATABTestProjectGameMode();
+
+protected:
+	virtual void InitializeGameCreator() override;
 };
 
 

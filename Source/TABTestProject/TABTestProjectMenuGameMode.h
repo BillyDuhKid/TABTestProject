@@ -11,8 +11,4 @@ class TABTESTPROJECT_API ATABTestProjectMenuGameMode : public ATAB_MenuGameMode
 {
 	GENERATED_BODY()
 
-public:
-	/** Initialization */
-	virtual void BeginPlay() override;
-
 };

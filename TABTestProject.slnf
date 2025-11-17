@@ -2,7 +2,8 @@
   "solution": {
     "path": "TABTestProject.sln",
     "projects": [
-      "Intermediate\\ProjectFiles\\TABTestProject.vcxproj"
+      "Intermediate\\ProjectFiles\\TABTestProject.vcxproj",
+      "Intermediate\\ProjectFiles\\UE5.vcxproj"
     ]
   }
 }
